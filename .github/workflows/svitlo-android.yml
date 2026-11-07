@@ -1,0 +1,51 @@
+name: Світло КР — Android APK
+
+on:
+  push:
+    paths:
+      - "svitlo-kr/android/**"
+      - ".github/workflows/svitlo-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: svitlo-kr/android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Build APK
+        run: gradle --no-daemon assembleRelease
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk ../../SvitloKR.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SvitloKR-apk
+          path: SvitloKR.apk
+
+      - name: Publish to «svitlo-kr-latest» release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: svitlo-kr-latest
+          name: Світло КР (Android)
+          prerelease: true
+          files: SvitloKR.apk
+          body: |
+            Остання збірка застосунку «Світло КР» для Android.
+            Завантажте SvitloKR.apk на телефон і відкрийте його (дозвольте встановлення з цього джерела).

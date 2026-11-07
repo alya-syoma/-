@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:id="@+id/dayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/dayBar"
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView style="@style/Tick" android:gravity="start" android:text="00" />
+        <TextView style="@style/Tick" android:gravity="center" android:text="06" />
+        <TextView style="@style/Tick" android:gravity="center" android:text="12" />
+        <TextView style="@style/Tick" android:gravity="center" android:text="18" />
+        <TextView style="@style/Tick" android:gravity="end" android:text="24" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dayNote"
+        style="@style/Muted"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/dayList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:lineSpacingExtra="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+</LinearLayout>
