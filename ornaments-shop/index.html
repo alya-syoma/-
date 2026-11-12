@@ -183,6 +183,9 @@
   .drawer-foot{padding:22px 24px;border-top:1px solid var(--line)}
   .total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;margin-bottom:16px}
   .drawer-foot .btn{width:100%;justify-content:center}
+  .checkout-note{font-size:12.5px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5}
+  .checkout-note b{color:var(--plum)}
+  .order-text{width:100%;min-height:96px;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--plum);font:inherit;font-size:13px;resize:vertical}
 
   .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);background:var(--plum);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;z-index:80;transition:transform .4s cubic-bezier(.3,1.4,.5,1);box-shadow:var(--shadow)}
   .toast.show{transform:translate(-50%,0)}
@@ -372,7 +375,9 @@
   <div class="items" id="items"></div>
   <div class="drawer-foot">
     <div class="total"><span>Разом</span><span id="total">0 грн</span></div>
-    <button class="btn btn-primary" id="checkout">Оформити замовлення</button>
+    <a class="btn btn-primary" id="checkout" href="https://www.threads.com/@nest.a.s" target="_blank" rel="noopener">Оформити замовлення в Threads</a>
+    <textarea id="orderText" class="order-text" readonly hidden aria-label="Текст замовлення"></textarea>
+    <p class="checkout-note">Відкриється профіль <b>@nest.a.s</b> у Threads. Ми скопіюємо замовлення, тож вам залишиться натиснути «Повідомлення» і вставити текст.</p>
   </div>
 </aside>
 <div class="toast" id="toast"></div>
@@ -438,7 +443,7 @@ function render(){
   totalEl.textContent=fmt(ids.reduce((s,k)=>s+cart[k]*products.find(x=>x.id==k).price,0));
 }
 const toastEl=document.getElementById('toast');let tt;
-function toast(t){toastEl.textContent=t;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),2000);}
+function toast(t,ms=2000){toastEl.textContent=t;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),ms);}
 grid.addEventListener('click',e=>{
   const a=e.target.closest('.add'); if(!a) return;
   const id=a.dataset.id; cart[id]=(cart[id]||0)+1; render();
@@ -451,7 +456,23 @@ const openCart=()=>document.body.classList.add('cart-open'),closeCart=()=>docume
 document.getElementById('cartBtn').onclick=openCart;
 document.getElementById('closeCart').onclick=closeCart;
 document.getElementById('overlay').onclick=closeCart;
-document.getElementById('checkout').onclick=()=>{closeCart();toast('🎁 Це демо — замовлення не надсилається');};
+const orderText=document.getElementById('orderText');
+function buildOrder(){
+  const ids=Object.keys(cart).filter(k=>cart[k]>0);
+  if(!ids.length) return '';
+  const lines=ids.map(k=>{const p=products.find(x=>x.id==k);return `• ${p.name} × ${cart[k]} = ${fmt(p.price*cart[k])}`;});
+  const sum=ids.reduce((s,k)=>s+cart[k]*products.find(x=>x.id==k).price,0);
+  return `Вітаю! Хочу замовити прикраси зі «Скляної Казки»:\n${lines.join('\n')}\nРазом: ${fmt(sum)}`;
+}
+document.getElementById('checkout').addEventListener('click',e=>{
+  const text=buildOrder();
+  if(!text){e.preventDefault();toast('🎄 Спершу додайте прикраси до кошика');return;}
+  orderText.value=text;
+  const fallback=()=>{orderText.hidden=false;orderText.focus();orderText.select();toast('Скопіюйте текст замовлення з поля в кошику',4000);};
+  try{
+    navigator.clipboard.writeText(text).then(()=>{orderText.hidden=true;toast('✨ Замовлення скопійовано. Вставте його в повідомлення в Threads',4000);},fallback);
+  }catch(err){fallback();}
+});
 document.getElementById('newsForm').onsubmit=e=>{e.preventDefault();e.target.reset();toast('💌 Промокод WINTER15 надіслано (демо)');};
 render();
 
