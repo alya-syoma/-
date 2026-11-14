@@ -61,12 +61,12 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;line-hei
 .stars.bump{animation:bump .5s}
 
 /* modes */
-.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.modes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .mode{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;transition:border-color .2s,background .2s}
 .mode b{font-family:var(--f-display);font-weight:700;font-size:18px}
 .mode small{color:var(--muted);font-size:13px;line-height:1.25}
 .mode[aria-selected="true"]{border-color:var(--accent);background:var(--lit)}
-@media (max-width:640px){.modes{grid-template-columns:1fr 1fr}}
+@media (max-width:860px){.modes{grid-template-columns:1fr 1fr}.mode:first-child{grid-column:1/-1}}
 
 /* stage */
 .stage{background:var(--surface);border:2px solid var(--line);border-radius:28px;padding:22px clamp(14px,3vw,30px) 26px;min-height:420px;display:flex;flex-direction:column;align-items:center;gap:18px;position:relative;overflow:hidden}
@@ -134,6 +134,22 @@ button.bigDigit{background:none}
 .choice.right{background:var(--good-bg);border-color:var(--good);color:var(--good);animation:pop .4s}
 .choice.nope{opacity:.35;animation:shake .4s}
 .choice.hint{border-color:var(--soft);animation:pulse 1.2s infinite}
+.subbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.subbar .seg button{font-size:14px}
+.choice.dig{aspect-ratio:auto;min-height:clamp(84px,22vw,110px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px 6px}
+.dig .pips{display:none;flex-wrap:wrap;justify-content:center;gap:3px;width:56px;max-width:100%}
+.dig.pipsOn .pips,.dig.reveal .pips{display:flex}
+.dig .pips i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.dig.reveal .d{color:var(--c)}
+.choices.many{max-width:600px}
+.choices.many .choice{width:clamp(60px,16vw,86px);min-height:clamp(70px,18vw,96px);font-size:clamp(36px,9vw,50px);border-radius:18px}
+.choices.many .dig .pips{width:44px;gap:2px}
+.choices.many .dig .pips i{width:6px;height:6px}
+.choice.picked{border-color:var(--accent);background:var(--lit)}
+.listen svg{width:22px;height:22px;fill:currentColor}
+.shown{display:flex;align-items:baseline;gap:14px}
+.shown .bigDigit{font-size:clamp(80px,16vw,120px)}
+.shown .word{font-family:var(--f-display);font-weight:700;font-size:28px;color:var(--c)}
 
 .target{display:flex;align-items:center;gap:16px}
 .target .bigDigit{font-size:clamp(90px,18vw,130px)}
@@ -210,6 +226,7 @@ button.bigDigit{background:none}
 
   <nav class="modes" role="tablist" aria-label="Ігри">
     <button class="mode" role="tab" data-mode="learn"><b>Знайомство</b><small>Дивимось і рахуємо разом</small></button>
+    <button class="mode" role="tab" data-mode="hear"><b>Почуй</b><small>Покажи цифру, яку чуєш</small></button>
     <button class="mode" role="tab" data-mode="count"><b>Порахуй</b><small>Скільки тут предметів?</small></button>
     <button class="mode" role="tab" data-mode="build"><b>Поклади</b><small>Стільки, скільки каже цифра</small></button>
     <button class="mode" role="tab" data-mode="match"><b>Знайди</b><small>Де стільки ж?</small></button>
@@ -248,6 +265,7 @@ button.bigDigit{background:none}
       <li>Починайте з «Знайомства» і чисел 1–5. До 1–10 переходьте, коли 1–5 впевнено.</li>
       <li>Рамка 2×5 допомагає бачити кількість одразу: повний ряд — це п'ять. «Розсипом» — складніший рівень.</li>
       <li>Просіть дитину торкатися кожного предмета пальцем і називати число вголос. Останнє назване число — це скільки всього.</li>
+      <li>«Почуй» вчить знаходити цифру за назвою. Почніть з рівня «Легко»: дві цифри, під ними крапки-підказки. Якщо на пристрої немає українського голосу, виберіть «Називаю я»: ви кажете число, дитина торкається цифри, і гра показує, скільки це предметів.</li>
       <li>Помилка тут не карається: гра сама перераховує разом із дитиною і підказує правильну цифру.</li>
       <li>Переносьте в життя: рахуйте ложки, сходинки, ґудзики, і щоразу показуйте відповідну цифру.</li>
     </ul>
@@ -267,9 +285,9 @@ const STAR='<path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1 6.1 20.3l1.3-6.
 const ARROW_L='<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>';
 const ARROW_R='<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>';
 
-const S={mode:'learn',max:5,theme:'apple',layout:'frame',sound:true,stars:0,stats:{},learnN:1};
+const S={mode:'learn',max:5,theme:'apple',layout:'frame',sound:true,stars:0,stats:{},learnN:1,hearSrc:'game',hearLevel:'easy'};
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null'); if(d) Object.assign(S,d);}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({mode:S.mode,max:S.max,theme:S.theme,layout:S.layout,sound:S.sound,stars:S.stars,stats:S.stats,learnN:S.learnN}))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({mode:S.mode,max:S.max,theme:S.theme,layout:S.layout,sound:S.sound,stars:S.stars,stats:S.stats,learnN:S.learnN,hearSrc:S.hearSrc,hearLevel:S.hearLevel}))}catch(e){}}
 
 const $=s=>document.querySelector(s);
 const stage=$('#stage');
@@ -587,10 +605,89 @@ function renderMatch(){
   });
 }
 
+/* Hear a number name, find the digit */
+const SPEAKER='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+function hearCtrl(){
+  return `<div class="subbar">
+    <div class="seg" id="hearSrc" aria-label="Хто називає число"><button data-v="game">Називає гра</button><button data-v="me">Називаю я</button></div>
+    ${S.hearSrc==='game'?`<div class="seg" id="hearLvl" aria-label="Рівень"><button data-v="easy">Легко</button><button data-v="mid">Середньо</button><button data-v="hard">Усі цифри</button></div>`:''}
+  </div>`;
+}
+function bindHearCtrl(){
+  const bind=(sel,key)=>{const box=stage.querySelector(sel); if(!box) return;
+    box.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.v===S[key]); b.onclick=()=>{S[key]=b.dataset.v; save(); render()}})};
+  bind('#hearSrc','hearSrc'); bind('#hearLvl','hearLevel');
+}
+function digTile(k,pips){return `<button class="choice dig${pips?' pipsOn':''}" data-k="${k}" style="--c:var(--n${k})" aria-label="Цифра ${k}"><span class="d">${k}</span><span class="pips">${'<i></i>'.repeat(k)}</span></button>`}
+function canHear(){return S.sound&&('speechSynthesis' in window)&&!(voicesKnown&&!ukVoice)}
+
+function renderHear(){
+  const id=++run;
+  if(S.hearSrc==='me') return renderHearMe(id);
+  const n=pick(), lvl=S.hearLevel;
+  let opts;
+  if(lvl==='hard'){opts=[];for(let k=1;k<=S.max;k++)opts.push(k)}
+  else if(lvl==='mid') opts=options(n);
+  else{
+    const far=[];for(let k=1;k<=S.max;k++) if(Math.abs(k-n)>=2) far.push(k);
+    const o=far.length?far[Math.floor(Math.random()*far.length)]:(n===1?2:n-1);
+    opts=[n,o].sort((a,b)=>a-b);
+  }
+  let firstTry=true, done=false, busy=false;
+  const warn=!S.sound?'Звук вимкнено. Увімкніть його в налаштуваннях нижче.':(!canHear()?'На цьому пристрої немає українського голосу. Виберіть «Називаю я» і називайте числа самі.':'');
+  stage.innerHTML=`${hearCtrl()}
+    <p class="prompt">Послухай і покажи цифру</p>
+    <button class="btn listen" id="listen">${SPEAKER} Послухати ще раз</button>
+    ${warn?`<p class="msg">${warn}</p>`:''}
+    <div class="choices${opts.length>3?' many':''}">${opts.map(k=>digTile(k,lvl==='easy')).join('')}</div>
+    <div class="result" id="result"></div>`;
+  bindHearCtrl();
+  const speak=()=>say(WORDS[n]);
+  $('#listen').onclick=speak;
+  setTimeout(()=>{if(id===run) speak()},450);
+  stage.querySelectorAll('.dig').forEach(b=>b.onclick=async()=>{
+    if(done||busy) return;
+    const k=+b.dataset.k;
+    if(k===n){
+      done=true; b.classList.add('right','reveal');
+      stage.querySelectorAll('.dig').forEach(x=>{x.classList.remove('hint'); if(x!==b) x.disabled=true});
+      record(n,firstTry);
+      const res=$('#result'); praise(res,n);
+      res.insertAdjacentHTML('afterbegin',frameHTML(n,{colorN:n}));
+    }else{
+      firstTry=false; busy=true; b.classList.add('nope','reveal'); b.disabled=true;
+      say(`Це ${WORDS[k]}. А треба ${WORDS[n]}`);
+      await wait(2300); if(id!==run) return;
+      const c=stage.querySelector(`.dig[data-k="${n}"]`); c.classList.add('hint','reveal');
+      say(WORDS[n]); busy=false;
+    }
+  });
+}
+
+function renderHearMe(id){
+  let tiles=''; for(let k=1;k<=S.max;k++) tiles+=digTile(k,false);
+  stage.innerHTML=`${hearCtrl()}
+    <p class="prompt">Назвіть число вголос. Дитина торкається цифри.</p>
+    <div class="choices many">${tiles}</div>
+    <div class="result" id="result"></div>`;
+  bindHearCtrl();
+  const res=$('#result');
+  stage.querySelectorAll('.dig').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k;
+    stage.querySelectorAll('.dig').forEach(x=>x.classList.toggle('picked',x===b));
+    res.innerHTML=`<div class="shown" style="--c:var(--n${k})"><span class="bigDigit">${k}</span><span class="word">${WORDS[k]}</span></div>
+      ${frameHTML(k,{colorN:k})}
+      <div class="row"><button class="btn" id="yes">Так, правильно</button><button class="btn ghost" id="again">Ні, ще раз</button></div>`;
+    say(WORDS[k]); tone(k-1);
+    $('#yes').onclick=()=>praise(res,k);
+    $('#again').onclick=()=>{res.innerHTML='<p class="msg">Назвіть число ще раз, повільно</p>'; b.classList.remove('picked')};
+  });
+}
+
 function render(){
   try{speechSynthesis.cancel()}catch(e){}
   document.querySelectorAll('.mode').forEach(b=>b.setAttribute('aria-selected',b.dataset.mode===S.mode));
-  ({learn:renderLearn,count:renderCount,build:renderBuild,match:renderMatch}[S.mode]||renderLearn)();
+  ({learn:renderLearn,hear:renderHear,count:renderCount,build:renderBuild,match:renderMatch}[S.mode]||renderLearn)();
 }
 
 /* ---------- settings ---------- */
